@@ -8,7 +8,6 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	"github.com/expert-pancake/service/accounting/model"
-	"github.com/expert-pancake/service/accounting/util"
 )
 
 func (a accountingService) CheckCompanySettingState(w http.ResponseWriter, r *http.Request) error {
@@ -22,18 +21,8 @@ func (a accountingService) CheckCompanySettingState(w http.ResponseWriter, r *ht
 	}
 
 	res := model.CheckCompanySettingStateResponse{
-		FiscalYear:  nil,
 		BankAccount: nil,
 		CashAccount: nil,
-	}
-
-	resultFiscal, errFiscal := a.dbTrx.GetCompanySettingFiscalYear(context.Background(), req.CompanyId)
-	if errFiscal == nil {
-		res.FiscalYear = &model.FiscalYear{
-			CompanyId:   resultFiscal.CompanyID,
-			StartPeriod: resultFiscal.StartPeriod.Format(util.DateLayoutYMD),
-			EndPeriod:   resultFiscal.EndPeriod.Format(util.DateLayoutYMD),
-		}
 	}
 
 	resultBank, errBank := a.dbTrx.GetCompanySettingBank(context.Background(), req.CompanyId)

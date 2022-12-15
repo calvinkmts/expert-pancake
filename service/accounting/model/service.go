@@ -124,7 +124,6 @@ type CheckCompanySettingStateRequest struct {
 }
 
 type CheckCompanySettingStateResponse struct {
-	FiscalYear  *FiscalYear     `json:"fiscal_year"`
 	BankAccount *ChartOfAccount `json:"bank_account"`
 	CashAccount *ChartOfAccount `json:"cash_account"`
 }
