@@ -20,6 +20,7 @@ type AccountingService interface {
 	CloseJournalBook(w http.ResponseWriter, r *http.Request) error
 	GetMemorialJournals(w http.ResponseWriter, r *http.Request) error
 	AddMemorialJournal(w http.ResponseWriter, r *http.Request) error
+	UpdateMemorialJournal(w http.ResponseWriter, r *http.Request) error
 	AddCashTransaction(w http.ResponseWriter, r *http.Request) error
 	GetCashTransactions(w http.ResponseWriter, r *http.Request) error
 	GetCashTransactionsGroupByDate(w http.ResponseWriter, r *http.Request) error
@@ -294,4 +295,11 @@ type AddMemorialJournalRequest struct {
 
 type AddMemorialJournalResponse struct {
 	MemorialJournal
+}
+
+type UpdateMemorialJournalRequest struct {
+	MemorialJournalId string                             `json:"memorial_journal_id" validate:"required"`
+	TransactionDate   string                             `json:"transaction_date" validate:"required"`
+	Description       string                             `json:"description"`
+	ChartOfAccounts   []AddMemorialJournalAccountRequest `json:"chart_of_accounts" validate:"required"`
 }

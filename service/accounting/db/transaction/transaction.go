@@ -18,6 +18,7 @@ type AccountingTrx interface {
 	CreateNewJournalBookTrx(ctx context.Context, arg CreateNewJournalBookTrxParams) (CreateNewJournalBookTrxResult, error)
 	CloseJournalBookTrx(ctx context.Context, arg string) (CloseJournalBookTrxResult, error)
 	CreateNewMemorialJournalTrx(ctx context.Context, arg CreateNewMemorialJournalTrxParams) (CreateNewMemorialJournalTrxResult, error)
+	UpdateMemorialJournalTrx(ctx context.Context, arg UpdateMemorialJournalTrxParams) (UpdateMemorialJournalTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions

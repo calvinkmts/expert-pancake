@@ -16,4 +16,5 @@ const (
 	CloseJournalBookError                = 500013
 	GetMemorialJournalsError             = 500014
 	AddMemorialJournalError              = 500015
+	UpdateMemorialJournalError           = 500016
 )
