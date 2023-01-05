@@ -9,4 +9,7 @@ const (
 	UpdateCompanyBranchError    = 400006
 	DeleteCompanyError          = 400007
 	DeleteCompanyBranchError    = 400008
+	GetContactGroupsError       = 400009
+	AddNewContactGroupError     = 400010
+	UpdateContactGroupError     = 400011
 )

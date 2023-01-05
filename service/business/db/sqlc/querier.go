@@ -12,14 +12,17 @@ type Querier interface {
 	DeleteCompany(ctx context.Context, id string) error
 	DeleteCompanyBranch(ctx context.Context, id string) error
 	DeleteCompanyBranchesByCompanyId(ctx context.Context, companyID string) error
+	GetContactGroups(ctx context.Context, companyID string) ([]GetContactGroupsRow, error)
 	GetUserCompanies(ctx context.Context, userID string) ([]GetUserCompaniesRow, error)
 	GetUserCompaniesFilteredByName(ctx context.Context, arg GetUserCompaniesFilteredByNameParams) ([]GetUserCompaniesFilteredByNameRow, error)
 	GetUserCompanyBranches(ctx context.Context, arg GetUserCompanyBranchesParams) ([]GetUserCompanyBranchesRow, error)
 	GetUserCompanyBranchesFilteredByName(ctx context.Context, arg GetUserCompanyBranchesFilteredByNameParams) ([]GetUserCompanyBranchesFilteredByNameRow, error)
 	InsertCompany(ctx context.Context, arg InsertCompanyParams) (BusinessCompany, error)
 	InsertCompanyBranch(ctx context.Context, arg InsertCompanyBranchParams) (BusinessCompanyBranch, error)
+	InsertContactGroup(ctx context.Context, arg InsertContactGroupParams) (BusinessContactGroup, error)
 	UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (BusinessCompany, error)
 	UpdateCompanyBranch(ctx context.Context, arg UpdateCompanyBranchParams) (BusinessCompanyBranch, error)
+	UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessContactGroup, error)
 }
 
 var _ Querier = (*Queries)(nil)

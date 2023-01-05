@@ -62,3 +62,21 @@ WHERE user_id = $1 AND company_id = $2 AND is_deleted = false;
 SELECT id, user_id, company_id, name, address, phone_number, is_central 
 FROM business.company_branches
 WHERE user_id = $1 AND company_id = $2 AND is_deleted = false AND name LIKE $3;
+
+-- name: GetContactGroups :many
+SELECT id, company_id, name
+FROM business.contact_groups
+WHERE company_id = $1;
+
+-- name: InsertContactGroup :one
+INSERT INTO business.contact_groups(id, company_id, name)
+VALUES ($1, $2, $3)
+RETURNING *;
+
+-- name: UpdateContactGroup :one
+UPDATE business.contact_groups
+SET 
+    name = $2,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING *;

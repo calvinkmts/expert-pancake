@@ -32,3 +32,11 @@ type BusinessCompanyBranch struct {
 	CreatedAt   sql.NullTime `db:"created_at"`
 	UpdatedAt   sql.NullTime `db:"updated_at"`
 }
+
+type BusinessContactGroup struct {
+	ID        string       `db:"id"`
+	CompanyID string       `db:"company_id"`
+	Name      string       `db:"name"`
+	CreatedAt sql.NullTime `db:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at"`
+}

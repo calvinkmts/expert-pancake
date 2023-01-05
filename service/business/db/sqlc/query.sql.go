@@ -45,6 +45,41 @@ func (q *Queries) DeleteCompanyBranchesByCompanyId(ctx context.Context, companyI
 	return err
 }
 
+const getContactGroups = `-- name: GetContactGroups :many
+SELECT id, company_id, name
+FROM business.contact_groups
+WHERE company_id = $1
+`
+
+type GetContactGroupsRow struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) GetContactGroups(ctx context.Context, companyID string) ([]GetContactGroupsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getContactGroups, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetContactGroupsRow
+	for rows.Next() {
+		var i GetContactGroupsRow
+		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserCompanies = `-- name: GetUserCompanies :many
 SELECT id, user_id, name, initial_name, type, responsible_person FROM business.companies
 WHERE user_id = $1 AND is_deleted = false
@@ -328,6 +363,31 @@ func (q *Queries) InsertCompanyBranch(ctx context.Context, arg InsertCompanyBran
 	return i, err
 }
 
+const insertContactGroup = `-- name: InsertContactGroup :one
+INSERT INTO business.contact_groups(id, company_id, name)
+VALUES ($1, $2, $3)
+RETURNING id, company_id, name, created_at, updated_at
+`
+
+type InsertContactGroupParams struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) InsertContactGroup(ctx context.Context, arg InsertContactGroupParams) (BusinessContactGroup, error) {
+	row := q.db.QueryRowContext(ctx, insertContactGroup, arg.ID, arg.CompanyID, arg.Name)
+	var i BusinessContactGroup
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updateCompany = `-- name: UpdateCompany :one
 UPDATE business.companies
 SET name = $2, 
@@ -404,6 +464,33 @@ func (q *Queries) UpdateCompanyBranch(ctx context.Context, arg UpdateCompanyBran
 		&i.PhoneNumber,
 		&i.IsCentral,
 		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateContactGroup = `-- name: UpdateContactGroup :one
+UPDATE business.contact_groups
+SET 
+    name = $2,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, company_id, name, created_at, updated_at
+`
+
+type UpdateContactGroupParams struct {
+	ID   string `db:"id"`
+	Name string `db:"name"`
+}
+
+func (q *Queries) UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessContactGroup, error) {
+	row := q.db.QueryRowContext(ctx, updateContactGroup, arg.ID, arg.Name)
+	var i BusinessContactGroup
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

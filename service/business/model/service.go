@@ -15,6 +15,10 @@ type BusinessService interface {
 	UpdateCompanyBranch(w http.ResponseWriter, r *http.Request) error
 	DeleteCompanyBranch(w http.ResponseWriter, r *http.Request) error
 	GetUserCompanyBranches(w http.ResponseWriter, r *http.Request) error
+
+	GetContactGroups(w http.ResponseWriter, r *http.Request) error
+	AddContactGroup(w http.ResponseWriter, r *http.Request) error
+	UpdateContactGroup(w http.ResponseWriter, r *http.Request) error
 }
 
 type Company struct {
@@ -104,4 +108,28 @@ type DeleteCompanyBranchRequest struct {
 
 type DeleteDataResponse struct {
 	Message string `json:"message"`
+}
+
+type ContactGroup struct {
+	GroupId   string `json:"group_id" validate:"required"`
+	CompanyId string `json:"company_id" validate:"required"`
+	Name      string `json:"name" validate:"required"`
+}
+
+type ContactGroupsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type AddContactGroupRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	Name      string `json:"name" validate:"required"`
+}
+
+type AddContactGroupResponse struct {
+	ContactGroup
+}
+
+type UpdateContactGroupRequest struct {
+	GroupId string `json:"group_id" validate:"required"`
+	Name    string `json:"name" validate:"required"`
 }
