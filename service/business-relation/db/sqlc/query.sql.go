@@ -540,24 +540,34 @@ func (q *Queries) InsertContactBookShippingAddress(ctx context.Context, arg Inse
 }
 
 const insertContactGroup = `-- name: InsertContactGroup :one
-INSERT INTO business_relation.contact_groups(id, company_id, name)
-VALUES ($1, $2, $3)
-RETURNING id, company_id, name, created_at, updated_at
+INSERT INTO business_relation.contact_groups(id, company_id, image_url, name, description)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, company_id, image_url, name, description, created_at, updated_at
 `
 
 type InsertContactGroupParams struct {
-	ID        string `db:"id"`
-	CompanyID string `db:"company_id"`
-	Name      string `db:"name"`
+	ID          string `db:"id"`
+	CompanyID   string `db:"company_id"`
+	ImageUrl    string `db:"image_url"`
+	Name        string `db:"name"`
+	Description string `db:"description"`
 }
 
 func (q *Queries) InsertContactGroup(ctx context.Context, arg InsertContactGroupParams) (BusinessRelationContactGroup, error) {
-	row := q.db.QueryRowContext(ctx, insertContactGroup, arg.ID, arg.CompanyID, arg.Name)
+	row := q.db.QueryRowContext(ctx, insertContactGroup,
+		arg.ID,
+		arg.CompanyID,
+		arg.ImageUrl,
+		arg.Name,
+		arg.Description,
+	)
 	var i BusinessRelationContactGroup
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
+		&i.ImageUrl,
 		&i.Name,
+		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -746,24 +756,35 @@ func (q *Queries) UpdateContactBookTaxInfo(ctx context.Context, arg UpdateContac
 const updateContactGroup = `-- name: UpdateContactGroup :one
 UPDATE business_relation.contact_groups
 SET 
-    name = $2,
+    image_url = $2,
+    name = $3,
+    description = $4,
     updated_at = NOW()
 WHERE id = $1
-RETURNING id, company_id, name, created_at, updated_at
+RETURNING id, company_id, image_url, name, description, created_at, updated_at
 `
 
 type UpdateContactGroupParams struct {
-	ID   string `db:"id"`
-	Name string `db:"name"`
+	ID          string `db:"id"`
+	ImageUrl    string `db:"image_url"`
+	Name        string `db:"name"`
+	Description string `db:"description"`
 }
 
 func (q *Queries) UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessRelationContactGroup, error) {
-	row := q.db.QueryRowContext(ctx, updateContactGroup, arg.ID, arg.Name)
+	row := q.db.QueryRowContext(ctx, updateContactGroup,
+		arg.ID,
+		arg.ImageUrl,
+		arg.Name,
+		arg.Description,
+	)
 	var i BusinessRelationContactGroup
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
+		&i.ImageUrl,
 		&i.Name,
+		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

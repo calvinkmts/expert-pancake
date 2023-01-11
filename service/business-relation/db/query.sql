@@ -1,12 +1,14 @@
 -- name: InsertContactGroup :one
-INSERT INTO business_relation.contact_groups(id, company_id, name)
-VALUES ($1, $2, $3)
+INSERT INTO business_relation.contact_groups(id, company_id, image_url, name, description)
+VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 
 -- name: UpdateContactGroup :one
 UPDATE business_relation.contact_groups
 SET 
-    name = $2,
+    image_url = $2,
+    name = $3,
+    description = $4,
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;
