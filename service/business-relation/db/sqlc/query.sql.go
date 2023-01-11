@@ -201,15 +201,20 @@ func (q *Queries) GetContactBooks(ctx context.Context, primaryCompanyID string) 
 }
 
 const getContactGroups = `-- name: GetContactGroups :many
-SELECT id, company_id, name
-FROM business_relation.contact_groups
-WHERE company_id = $1
+SELECT a.id, a.company_id, a.image_url, a.name, a.description, COUNT(b.id) AS member
+FROM business_relation.contact_groups a 
+LEFT JOIN business_relation.contact_books b ON a.id = b.contact_group_id
+WHERE a.company_id = $1
+GROUP BY a.id
 `
 
 type GetContactGroupsRow struct {
-	ID        string `db:"id"`
-	CompanyID string `db:"company_id"`
-	Name      string `db:"name"`
+	ID          string `db:"id"`
+	CompanyID   string `db:"company_id"`
+	ImageUrl    string `db:"image_url"`
+	Name        string `db:"name"`
+	Description string `db:"description"`
+	Member      int64  `db:"member"`
 }
 
 func (q *Queries) GetContactGroups(ctx context.Context, companyID string) ([]GetContactGroupsRow, error) {
@@ -221,7 +226,14 @@ func (q *Queries) GetContactGroups(ctx context.Context, companyID string) ([]Get
 	var items []GetContactGroupsRow
 	for rows.Next() {
 		var i GetContactGroupsRow
-		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.ImageUrl,
+			&i.Name,
+			&i.Description,
+			&i.Member,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -540,24 +552,34 @@ func (q *Queries) InsertContactBookShippingAddress(ctx context.Context, arg Inse
 }
 
 const insertContactGroup = `-- name: InsertContactGroup :one
-INSERT INTO business_relation.contact_groups(id, company_id, name)
-VALUES ($1, $2, $3)
-RETURNING id, company_id, name, created_at, updated_at
+INSERT INTO business_relation.contact_groups(id, company_id, image_url, name, description)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, company_id, image_url, name, description, created_at, updated_at
 `
 
 type InsertContactGroupParams struct {
-	ID        string `db:"id"`
-	CompanyID string `db:"company_id"`
-	Name      string `db:"name"`
+	ID          string `db:"id"`
+	CompanyID   string `db:"company_id"`
+	ImageUrl    string `db:"image_url"`
+	Name        string `db:"name"`
+	Description string `db:"description"`
 }
 
 func (q *Queries) InsertContactGroup(ctx context.Context, arg InsertContactGroupParams) (BusinessRelationContactGroup, error) {
-	row := q.db.QueryRowContext(ctx, insertContactGroup, arg.ID, arg.CompanyID, arg.Name)
+	row := q.db.QueryRowContext(ctx, insertContactGroup,
+		arg.ID,
+		arg.CompanyID,
+		arg.ImageUrl,
+		arg.Name,
+		arg.Description,
+	)
 	var i BusinessRelationContactGroup
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
+		&i.ImageUrl,
 		&i.Name,
+		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -746,24 +768,35 @@ func (q *Queries) UpdateContactBookTaxInfo(ctx context.Context, arg UpdateContac
 const updateContactGroup = `-- name: UpdateContactGroup :one
 UPDATE business_relation.contact_groups
 SET 
-    name = $2,
+    image_url = $2,
+    name = $3,
+    description = $4,
     updated_at = NOW()
 WHERE id = $1
-RETURNING id, company_id, name, created_at, updated_at
+RETURNING id, company_id, image_url, name, description, created_at, updated_at
 `
 
 type UpdateContactGroupParams struct {
-	ID   string `db:"id"`
-	Name string `db:"name"`
+	ID          string `db:"id"`
+	ImageUrl    string `db:"image_url"`
+	Name        string `db:"name"`
+	Description string `db:"description"`
 }
 
 func (q *Queries) UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessRelationContactGroup, error) {
-	row := q.db.QueryRowContext(ctx, updateContactGroup, arg.ID, arg.Name)
+	row := q.db.QueryRowContext(ctx, updateContactGroup,
+		arg.ID,
+		arg.ImageUrl,
+		arg.Name,
+		arg.Description,
+	)
 	var i BusinessRelationContactGroup
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
+		&i.ImageUrl,
 		&i.Name,
+		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
