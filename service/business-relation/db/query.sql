@@ -1,20 +1,24 @@
 -- name: InsertContactGroup :one
-INSERT INTO business_relation.contact_groups(id, company_id, name)
-VALUES ($1, $2, $3)
+INSERT INTO business_relation.contact_groups(id, company_id, image_url, name, description)
+VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 
 -- name: UpdateContactGroup :one
 UPDATE business_relation.contact_groups
 SET 
-    name = $2,
+    image_url = $2,
+    name = $3,
+    description = $4,
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;
 
 -- name: GetContactGroups :many
-SELECT id, company_id, name
-FROM business_relation.contact_groups
-WHERE company_id = $1;
+SELECT a.id, a.company_id, a.image_url, a.name, a.description, COUNT(b.id) AS member
+FROM business_relation.contact_groups a 
+LEFT JOIN business_relation.contact_books b ON a.id = b.contact_group_id
+WHERE a.company_id = $1
+GROUP BY a.id;
 
 -- name: InsertContactBook :one
 INSERT INTO business_relation.contact_books(id, primary_company_id, secondary_company_id,
@@ -50,7 +54,8 @@ WHERE id = $1;
 
 -- name: GetContactBooks :many
 SELECT a.id, a.primary_company_id, a.secondary_company_id, 
-a.contact_group_id, a.name, a.email, a.phone, a.mobile, a.web,
+a.contact_group_id, COALESCE(e.name, '') AS contact_group_name,
+a.name, a.email, a.phone, a.mobile, a.web,
 a.is_all_branches, a.is_customer, a.is_supplier,
 b.nickname, b.tag, b.note,
 c.province AS mailing_province, c.regency AS mailing_regency,
@@ -63,7 +68,10 @@ FROM business_relation.contact_books a
 JOIN business_relation.contact_book_additional_infos b ON a.id = b.contact_book_id
 JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book_id
 JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
-WHERE a.primary_company_id = $1;
+LEFT JOIN business_relation.contact_groups e ON a.contact_group_id = e.id
+WHERE a.primary_company_id = $1
+AND CASE WHEN @is_filter_group_id::bool
+THEN a.contact_group_id = $2 ELSE TRUE END;
 
 -- name: GetContactBookById :one
 SELECT a.id, a.primary_company_id, a.secondary_company_id,

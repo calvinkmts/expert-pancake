@@ -21,14 +21,27 @@ type BusinessRelationService interface {
 }
 
 type ContactGroup struct {
-	GroupId   string `json:"group_id" validate:"required"`
-	CompanyId string `json:"company_id" validate:"required"`
-	Name      string `json:"name" validate:"required"`
+	GroupId     string `json:"group_id" validate:"required"`
+	CompanyId   string `json:"company_id" validate:"required"`
+	ImageUrl    string `json:"image_url" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description" validate:"required"`
+}
+
+type ContactGroupWithMember struct {
+	GroupId     string `json:"group_id" validate:"required"`
+	CompanyId   string `json:"company_id" validate:"required"`
+	ImageUrl    string `json:"image_url" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description" validate:"required"`
+	Member      string `json:"member" validate:"required"`
 }
 
 type AddContactGroupRequest struct {
-	CompanyId string `json:"company_id" validate:"required"`
-	Name      string `json:"name" validate:"required"`
+	CompanyId   string `json:"company_id" validate:"required"`
+	ImageUrl    string `json:"image_url"`
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description"`
 }
 
 type AddContactGroupResponse struct {
@@ -36,8 +49,10 @@ type AddContactGroupResponse struct {
 }
 
 type UpdateContactGroupRequest struct {
-	GroupId string `json:"group_id" validate:"required"`
-	Name    string `json:"name" validate:"required"`
+	GroupId     string `json:"group_id" validate:"required"`
+	ImageUrl    string `json:"image_url"`
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description"`
 }
 
 type UpdateContactGroupResponse struct {
@@ -53,6 +68,28 @@ type ContactBook struct {
 	PrimaryCompanyId   string                   `json:"primary_company_id" validate:"required"`
 	SecondaryCompanyId string                   `json:"secondary_company_id" validate:"required"`
 	ContactGroupId     string                   `json:"contact_group_id" validate:"required"`
+	Name               string                   `json:"name" validate:"required"`
+	Email              string                   `json:"email" validate:"required"`
+	Phone              string                   `json:"phone" validate:"required"`
+	Mobile             string                   `json:"mobile" validate:"required"`
+	Web                string                   `json:"web" validate:"required"`
+	AdditionalInfo     ContactBookAdditionaInfo `json:"additional_info" validate:"required"`
+	MailingAddress     ContactBookAddress       `json:"mailing_address" validate:"required"`
+	ShippingAddress    ContactBookAddress       `json:"shipping_address" validate:"required"`
+	IsAllBranches      bool                     `json:"is_all_branches" validate:"required"`
+	Branches           []string                 `json:"branches" validate:"required"`
+	IsCustomer         bool                     `json:"is_customer" validate:"required"`
+	CustomerCp         string                   `json:"customer_contact_person" validate:"required"`
+	IsSupplier         bool                     `json:"is_supplier" validate:"required"`
+	SupplierCp         string                   `json:"supplier_contact_person" validate:"required"`
+}
+
+type ContactBookWithGroupName struct {
+	ContactBookId      string                   `json:"contact_book_id" validate:"required"`
+	PrimaryCompanyId   string                   `json:"primary_company_id" validate:"required"`
+	SecondaryCompanyId string                   `json:"secondary_company_id" validate:"required"`
+	ContactGroupId     string                   `json:"contact_group_id" validate:"required"`
+	ContactGroupName   string                   `json:"contact_group_name" validate:"required"`
 	Name               string                   `json:"name" validate:"required"`
 	Email              string                   `json:"email" validate:"required"`
 	Phone              string                   `json:"phone" validate:"required"`
@@ -156,7 +193,8 @@ type UpdateContactBookResponse struct {
 }
 
 type GetContactBooksRequest struct {
-	CompanyId string `json:"company_id" validate:"required"`
+	CompanyId      string `json:"company_id" validate:"required"`
+	ContactGroupId string `json:"contact_group_id"`
 }
 
 type UpdateCustomerRequest struct {
