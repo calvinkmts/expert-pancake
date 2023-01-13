@@ -22,14 +22,6 @@ type BusinessRelationService interface {
 	GetSuppliers(w http.ResponseWriter, r *http.Request) error
 }
 
-type ContactGroup struct {
-	GroupId     string `json:"group_id" validate:"required"`
-	CompanyId   string `json:"company_id" validate:"required"`
-	ImageUrl    string `json:"image_url" validate:"required"`
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description" validate:"required"`
-}
-
 type ContactGroupWithMember struct {
 	GroupId     string `json:"group_id" validate:"required"`
 	CompanyId   string `json:"company_id" validate:"required"`
@@ -59,7 +51,7 @@ type UpdateContactGroupRequest struct {
 }
 
 type UpdateContactGroupResponse struct {
-	ContactGroup
+	ContactGroupWithMember
 }
 
 type GetContactGroupsRequest struct {

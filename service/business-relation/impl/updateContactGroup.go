@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
@@ -30,13 +31,23 @@ func (a businessRelationService) UpdateContactGroup(w http.ResponseWriter, r *ht
 		return errors.NewServerError(model.UpdateContactGroupError, err.Error())
 	}
 
+	members, err := a.dbTrx.GetContactBooks(context.Background(), db.GetContactBooksParams{
+		PrimaryCompanyID: result.CompanyID,
+		IsFilterGroupID:  true,
+		ContactGroupID:   result.ID,
+	})
+	if err != nil {
+		return errors.NewServerError(model.UpdateContactGroupError, err.Error())
+	}
+
 	res := model.UpdateContactGroupResponse{
-		ContactGroup: model.ContactGroup{
+		ContactGroupWithMember: model.ContactGroupWithMember{
 			GroupId:     result.ID,
 			CompanyId:   result.CompanyID,
 			ImageUrl:    result.ImageUrl,
 			Name:        result.Name,
 			Description: result.Description,
+			Member:      strconv.Itoa(int(len(members))),
 		},
 	}
 	httpHandler.WriteResponse(w, res)
