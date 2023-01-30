@@ -73,6 +73,7 @@ func (trx *Trx) AddWarehouseTrx(ctx context.Context, arg AddWarehouseTrxParams) 
 		result.WarehouseId = id
 		result.BranchId = warehouseRes.BranchID
 		result.Name = warehouseRes.Name
+		result.Code = warehouseRes.Code
 		result.Type = warehouseRes.Type
 		result.Address = warehouseRes.Address
 		result.Racks = racks
