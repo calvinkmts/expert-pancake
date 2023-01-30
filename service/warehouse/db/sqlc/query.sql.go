@@ -9,6 +9,89 @@ import (
 	"context"
 )
 
+const addWarehouse = `-- name: AddWarehouse :one
+INSERT INTO warehouse.warehouses
+(id, branch_id, code, name, address, type)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, branch_id, code, name, address, type, is_deleted, created_at, updated_at
+`
+
+type AddWarehouseParams struct {
+	ID       string `db:"id"`
+	BranchID string `db:"branch_id"`
+	Code     string `db:"code"`
+	Name     string `db:"name"`
+	Address  string `db:"address"`
+	Type     string `db:"type"`
+}
+
+func (q *Queries) AddWarehouse(ctx context.Context, arg AddWarehouseParams) (WarehouseWarehouse, error) {
+	row := q.db.QueryRowContext(ctx, addWarehouse,
+		arg.ID,
+		arg.BranchID,
+		arg.Code,
+		arg.Name,
+		arg.Address,
+		arg.Type,
+	)
+	var i WarehouseWarehouse
+	err := row.Scan(
+		&i.ID,
+		&i.BranchID,
+		&i.Code,
+		&i.Name,
+		&i.Address,
+		&i.Type,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const addWarehouseRack = `-- name: AddWarehouseRack :one
+INSERT INTO warehouse.warehouse_racks
+(warehouse_id, rack_id)
+VALUES ($1, $2)
+RETURNING warehouse_id, rack_id, created_at, updated_at
+`
+
+type AddWarehouseRackParams struct {
+	WarehouseID string `db:"warehouse_id"`
+	RackID      string `db:"rack_id"`
+}
+
+func (q *Queries) AddWarehouseRack(ctx context.Context, arg AddWarehouseRackParams) (WarehouseWarehouseRack, error) {
+	row := q.db.QueryRowContext(ctx, addWarehouseRack, arg.WarehouseID, arg.RackID)
+	var i WarehouseWarehouseRack
+	err := row.Scan(
+		&i.WarehouseID,
+		&i.RackID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getRack = `-- name: GetRack :one
+SELECT id, branch_id, name
+FROM warehouse.racks 
+WHERE id = $1
+`
+
+type GetRackRow struct {
+	ID       string `db:"id"`
+	BranchID string `db:"branch_id"`
+	Name     string `db:"name"`
+}
+
+func (q *Queries) GetRack(ctx context.Context, id string) (GetRackRow, error) {
+	row := q.db.QueryRowContext(ctx, getRack, id)
+	var i GetRackRow
+	err := row.Scan(&i.ID, &i.BranchID, &i.Name)
+	return i, err
+}
+
 const getRacks = `-- name: GetRacks :many
 SELECT a.id, a.branch_id, a.name
 FROM warehouse.racks a
@@ -40,6 +123,41 @@ func (q *Queries) GetRacks(ctx context.Context, arg GetRacksParams) ([]GetRacksR
 	var items []GetRacksRow
 	for rows.Next() {
 		var i GetRacksRow
+		if err := rows.Scan(&i.ID, &i.BranchID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getWarehouseRacks = `-- name: GetWarehouseRacks :many
+SELECT b.id, b.branch_id, b.name
+FROM warehouse.warehouse_racks a JOIN warehouse.racks b ON a.rack_id = b.id 
+WHERE a.warehouse_id = $1
+`
+
+type GetWarehouseRacksRow struct {
+	ID       string `db:"id"`
+	BranchID string `db:"branch_id"`
+	Name     string `db:"name"`
+}
+
+func (q *Queries) GetWarehouseRacks(ctx context.Context, warehouseID string) ([]GetWarehouseRacksRow, error) {
+	rows, err := q.db.QueryContext(ctx, getWarehouseRacks, warehouseID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetWarehouseRacksRow
+	for rows.Next() {
+		var i GetWarehouseRacksRow
 		if err := rows.Scan(&i.ID, &i.BranchID, &i.Name); err != nil {
 			return nil, err
 		}

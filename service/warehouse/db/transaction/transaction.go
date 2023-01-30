@@ -10,6 +10,7 @@ import (
 
 type WarehouseTrx interface {
 	Querier
+	AddWarehouseTrx(ctx context.Context, arg AddWarehouseTrxParams) (AddWarehouseTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions

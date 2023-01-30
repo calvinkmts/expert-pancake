@@ -9,6 +9,7 @@ type WarehouseService interface {
 	GetRacks(w http.ResponseWriter, r *http.Request) error
 
 	GetWarehouses(w http.ResponseWriter, r *http.Request) error
+	AddWarehouse(w http.ResponseWriter, r *http.Request) error
 }
 
 type Rack struct {
@@ -44,10 +45,25 @@ type Warehouse struct {
 	Name        string `json:"name" validate:"required"`
 	Type        string `json:"type" validate:"required"`
 	Address     string `json:"address" validate:"required"`
+	Racks       []Rack `json:"racks"`
 }
 
 type GetWarehousesRequest struct {
 	BranchId string `json:"branch_id" validate:"required"`
 	Keyword  string `json:"keyword"`
 	Type     string `json:"type"`
+}
+
+type WarehouseRack struct {
+	WarehouseId string `json:"warehouse_id" validate:"required"`
+	RackId    string `json:"branch_id" validate:"required"`
+}
+
+type AddWarehouseRequest struct {
+	BranchId string   `json:"branch_id" validate:"required"`
+	Code     string   `json:"code" validate:"required"`
+	Name     string   `json:"name" validate:"required"`
+	Type     string   `json:"type" validate:"required"`
+	Address  string   `json:"address" validate:"required"`
+	RackIds  []string `json:"rack_ids" validate:"required"`
 }

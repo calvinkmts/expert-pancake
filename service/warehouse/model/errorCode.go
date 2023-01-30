@@ -5,4 +5,5 @@ const (
 	GetRacksError = 800002
 	
 	GetWarehousesError = 800003
+	AddWarehouseError = 800004
 )
