@@ -6,12 +6,10 @@ import (
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
-	db "github.com/expert-pancake/service/warehouse/db/transaction"
 	"github.com/expert-pancake/service/warehouse/model"
 )
 
 func (a warehouseService) AddWarehouse(w http.ResponseWriter, r *http.Request) error {
-
 	var req model.AddWarehouseRequest
 
 	httpHandler.ParseHTTPRequest(r, &req)
@@ -21,7 +19,7 @@ func (a warehouseService) AddWarehouse(w http.ResponseWriter, r *http.Request) e
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.AddWarehouseTrxParams{
+	arg := model.AddWarehouseRequest{
 		BranchId: req.BranchId,
 		Code:     req.Code,
 		Name:     req.Name,
@@ -35,7 +33,15 @@ func (a warehouseService) AddWarehouse(w http.ResponseWriter, r *http.Request) e
 		return errors.NewServerError(model.AddWarehouseError, err.Error())
 	}
 
-	res := result
+	res := model.Warehouse{
+		WarehouseId: result.WarehouseId,
+		BranchId: result.BranchId,
+		Name: result.Name,
+		Code: result.Code,
+		Type: result.Type,
+		Address: result.Address,
+		Racks: result.Racks,
+	}
 	httpHandler.WriteResponse(w, res)
 
 	return nil

@@ -8,27 +8,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type AddWarehouseTrxParams struct {
-	BranchId string  
-	Code     string  
-	Name     string  
-	Type     string  
-	Address  string  
-	RackIds  []string
-}
-
-type AddWarehouseTrxResult struct {
-	WarehouseId string
-	BranchId    string
-	Code        string
-	Name        string
-	Type        string
-	Address     string
-	Racks       []model.Rack 
-}
-
-func (trx *Trx) AddWarehouseTrx(ctx context.Context, arg AddWarehouseTrxParams) (AddWarehouseTrxResult, error) {
-	var result AddWarehouseTrxResult
+func (trx *Trx) AddWarehouseTrx(ctx context.Context, arg model.AddWarehouseRequest) (model.Warehouse, error) {
+	var result model.Warehouse
 
 	err := trx.execTx(ctx, func(q *db.Queries) error {
 		var err error

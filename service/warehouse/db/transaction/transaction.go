@@ -6,11 +6,12 @@ import (
 	"fmt"
 
 	. "github.com/expert-pancake/service/warehouse/db/sqlc"
+	"github.com/expert-pancake/service/warehouse/model"
 )
 
 type WarehouseTrx interface {
 	Querier
-	AddWarehouseTrx(ctx context.Context, arg AddWarehouseTrxParams) (AddWarehouseTrxResult, error)
+	AddWarehouseTrx(ctx context.Context, arg model.AddWarehouseRequest) (model.Warehouse, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions
