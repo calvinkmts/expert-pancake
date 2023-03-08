@@ -29,7 +29,7 @@ func (a inventoryService) AddItem(w http.ResponseWriter, r *http.Request) error 
 		Barcode:     req.Barcode,
 		Name:        req.Name,
 		BrandId:     req.BrandId,
-		GroupId:     req.GroupId,
+		GroupId:     util.ArrayToString(req.GroupId),
 		Tag:         util.ArrayToString(req.Tag),
 		Price:       req.Price,
 		Description: req.Description,
@@ -38,6 +38,21 @@ func (a inventoryService) AddItem(w http.ResponseWriter, r *http.Request) error 
 	result, err := a.dbTrx.AddItemTrx(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.AddNewItemError, err.Error())
+	}
+
+	groupsResult, err := a.dbTrx.GetItemGroups(context.Background(), req.GroupId)
+	if err != nil {
+		return errors.NewServerError(model.AddNewItemError, err.Error())
+	}
+
+	var groups = make([]model.Group, 0)
+	for _, d := range groupsResult {
+		var group = model.Group{
+			GroupId:   d.ID,
+			CompanyId: d.CompanyID,
+			Name:      d.Name,
+		}
+		groups = append(groups, group)
 	}
 
 	res := model.AddItemResponse{
@@ -52,8 +67,7 @@ func (a inventoryService) AddItem(w http.ResponseWriter, r *http.Request) error 
 			VariantName: result.VariantName,
 			BrandId:     result.BrandId,
 			BrandName:   result.BrandName,
-			GroupId:     result.GroupId,
-			GroupName:   result.GroupName,
+			Groups:      groups,
 			Tag:         util.StringToArray(result.Tag),
 			Description: result.Description,
 			IsDefault:   result.IsDefault,

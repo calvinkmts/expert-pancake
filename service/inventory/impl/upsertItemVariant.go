@@ -51,6 +51,21 @@ func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Reque
 		return errors.NewServerError(model.UpsertItemVariantError, err.Error())
 	}
 
+	groupsResult, err := a.dbTrx.GetItemGroups(context.Background(), util.StringToArray(result.GroupID))
+		if err != nil {
+			return errors.NewServerError(model.GetItemVariantsError, err.Error())
+		}
+
+		var groups = make([]model.Group, 0)
+		for _, d := range groupsResult {
+			var group = model.Group{
+				GroupId:   d.ID,
+				CompanyId: d.CompanyID,
+				Name:      d.Name,
+			}
+			groups = append(groups, group)
+		}
+
 	res := model.UpsertItemVariantResponse{
 		Item: model.Item{
 			CompanyId:   result.CompanyID,
@@ -63,8 +78,7 @@ func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Reque
 			VariantName: result.VariantName,
 			BrandId:     result.BrandID,
 			BrandName:   result.BrandName,
-			GroupId:     result.GroupID,
-			GroupName:   result.GroupName,
+			Groups:      groups,
 			Tag:         util.StringToArray(result.Tag),
 			Description: result.Description,
 			IsDefault:   result.IsDefault,

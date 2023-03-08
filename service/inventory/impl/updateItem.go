@@ -29,7 +29,7 @@ func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) err
 		Barcode:     req.Barcode,
 		Name:        req.Name,
 		BrandId:     req.BrandId,
-		GroupId:     req.GroupId,
+		GroupId:     util.ArrayToString(req.GroupId),
 		Tag:         util.ArrayToString(req.Tag),
 		Price:       req.Price,
 		Description: req.Description,
@@ -38,6 +38,21 @@ func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) err
 	result, err := a.dbTrx.UpdateItemTrx(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.UpdateItemError, err.Error())
+	}
+
+	groupsResult, err := a.dbTrx.GetItemGroups(context.Background(), req.GroupId)
+	if err != nil {
+		return errors.NewServerError(model.AddNewItemError, err.Error())
+	}
+
+	var groups = make([]model.Group, 0)
+	for _, d := range groupsResult {
+		var group = model.Group{
+			GroupId:   d.ID,
+			CompanyId: d.CompanyID,
+			Name:      d.Name,
+		}
+		groups = append(groups, group)
 	}
 
 	res := model.UpdateItemResponse{
@@ -52,8 +67,7 @@ func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) err
 			VariantName: result.VariantName,
 			BrandId:     result.BrandId,
 			BrandName:   result.BrandName,
-			GroupId:     result.GroupId,
-			GroupName:   result.GroupName,
+			Groups:      groups,
 			Tag:         util.StringToArray(result.Tag),
 			Description: result.Description,
 			IsDefault:   result.IsDefault,

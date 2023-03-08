@@ -33,6 +33,22 @@ func (a inventoryService) GetItems(w http.ResponseWriter, r *http.Request) error
 	var items = make([]model.Item, 0)
 
 	for _, d := range result {
+
+		groupsResult, err := a.dbTrx.GetItemGroups(context.Background(), util.StringToArray(d.GroupID))
+		if err != nil {
+			return errors.NewServerError(model.GetItemVariantsError, err.Error())
+		}
+
+		var groups = make([]model.Group, 0)
+		for _, d := range groupsResult {
+			var group = model.Group{
+				GroupId:   d.ID,
+				CompanyId: d.CompanyID,
+				Name:      d.Name,
+			}
+			groups = append(groups, group)
+		}
+
 		var item = model.Item{
 			CompanyId:   d.CompanyID,
 			ItemId:      d.ID,
@@ -44,8 +60,7 @@ func (a inventoryService) GetItems(w http.ResponseWriter, r *http.Request) error
 			VariantName: d.VariantName,
 			BrandId:     d.BrandID,
 			BrandName:   d.BrandName,
-			GroupId:     d.GroupID,
-			GroupName:   d.GroupName,
+			Groups:      groups,
 			Tag:         util.StringToArray(d.Tag),
 			Description: d.Description,
 			IsDefault:   d.IsDefault,

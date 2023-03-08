@@ -151,7 +151,6 @@ SELECT a.id,
     a.brand_id,
     COALESCE(c.name, '') AS brand_name,
     a.group_id,
-    d.name AS group_name,
     a.tag,
     a.description,
     b.is_default,
@@ -159,9 +158,14 @@ SELECT a.id,
 FROM inventory.items a
     JOIN inventory.item_variants b ON a.id = b.item_id
     LEFT JOIN inventory.brands c ON a.brand_id = c.id
-    JOIN inventory.groups d ON a.group_id = d.id
 WHERE a.company_id = $1
     AND b.name LIKE $2;
+
+-- name: GetItemGroups :many
+SELECT id, name, company_id
+FROM inventory.groups
+WHERE is_deleted = false
+AND id = ANY(@group_ids::text []);
 
 -- name: UpsertItemInfo :exec
 INSERT INTO inventory.item_infos(
@@ -225,7 +229,6 @@ SELECT b.id,
     b.brand_id,
     COALESCE(c.name, '') AS brand_name,
     b.group_id,
-    d.name AS group_name,
     b.tag,
     b.description,
     a.is_default,
@@ -233,7 +236,6 @@ SELECT b.id,
 FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
     LEFT JOIN inventory.brands c ON b.brand_id = c.id
-    JOIN inventory.groups d ON b.group_id = d.id
 WHERE a.id = $1;
 
 -- name: GetItemVariants :many
@@ -248,7 +250,6 @@ SELECT b.id,
     b.brand_id,
     COALESCE(c.name, '') AS brand_name,
     b.group_id,
-    d.name AS group_name,
     b.tag,
     b.description,
     a.is_default,
@@ -256,7 +257,6 @@ SELECT b.id,
 FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
     LEFT JOIN inventory.brands c ON b.brand_id = c.id
-    JOIN inventory.groups d ON b.group_id = d.id
 WHERE a.item_id = $1
     AND a.name LIKE $2;
 
