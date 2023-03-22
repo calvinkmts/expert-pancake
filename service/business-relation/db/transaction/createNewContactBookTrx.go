@@ -5,6 +5,7 @@ import (
 
 	db "github.com/expert-pancake/service/business-relation/db/sqlc"
 	"github.com/expert-pancake/service/business-relation/model"
+	"github.com/expert-pancake/service/business-relation/util"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -79,7 +80,7 @@ func (trx *Trx) CreateNewContactBookTrx(ctx context.Context, arg CreateNewContac
 		err = q.InsertContactBookAdditionalInfo(ctx, db.InsertContactBookAdditionalInfoParams{
 			ContactBookID: id,
 			Nickname:      arg.AdditionalInfo.Nickname,
-			Tag:           arg.AdditionalInfo.Tag,
+			Tag:           util.ArrayToString(arg.AdditionalInfo.Tag),
 			Note:          arg.AdditionalInfo.Note,
 		})
 		if err != nil {

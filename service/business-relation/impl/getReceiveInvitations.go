@@ -7,6 +7,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	"github.com/expert-pancake/service/business-relation/model"
+	"github.com/expert-pancake/service/business-relation/util"
 )
 
 func (a businessRelationService) GetReceiveInvitations(w http.ResponseWriter, r *http.Request) error {
@@ -39,7 +40,7 @@ func (a businessRelationService) GetReceiveInvitations(w http.ResponseWriter, r 
 			Web:              d.Web,
 			AdditionalInfo: model.ContactBookAdditionaInfo{
 				Nickname: d.Nickname,
-				Tag:      d.Tag,
+				Tag:      util.StringToArray(d.Tag),
 				Note:     d.Note,
 			},
 			MailingAddress: model.ContactBookAddress{

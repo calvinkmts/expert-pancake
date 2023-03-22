@@ -66,7 +66,7 @@ func (a businessRelationService) GetContactBooks(w http.ResponseWriter, r *http.
 			Web:                d.Web,
 			AdditionalInfo: model.ContactBookAdditionaInfo{
 				Nickname: d.Nickname,
-				Tag:      d.Tag,
+				Tag:      util.StringToArray(d.Tag),
 				Note:     d.Note,
 			},
 			MailingAddress: model.ContactBookAddress{

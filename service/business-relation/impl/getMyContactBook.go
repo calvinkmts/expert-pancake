@@ -7,6 +7,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	"github.com/expert-pancake/service/business-relation/model"
+	"github.com/expert-pancake/service/business-relation/util"
 )
 
 func (a businessRelationService) GetMyContactBook(w http.ResponseWriter, r *http.Request) error {
@@ -50,7 +51,7 @@ func (a businessRelationService) GetMyContactBook(w http.ResponseWriter, r *http
 		Web:              result.Web,
 		AdditionalInfo: model.ContactBookAdditionaInfo{
 			Nickname: resultAdditionalInfo.Nickname,
-			Tag:      resultAdditionalInfo.Tag,
+			Tag:      util.StringToArray(resultAdditionalInfo.Tag),
 			Note:     resultAdditionalInfo.Note,
 		},
 		MailingAddress: model.ContactBookAddress{

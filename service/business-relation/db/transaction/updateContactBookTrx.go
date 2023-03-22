@@ -5,6 +5,7 @@ import (
 
 	db "github.com/expert-pancake/service/business-relation/db/sqlc"
 	"github.com/expert-pancake/service/business-relation/model"
+	"github.com/expert-pancake/service/business-relation/util"
 )
 
 type UpdateContactBookTrxParams struct {
@@ -75,7 +76,7 @@ func (trx *Trx) UpdateContactBookTrx(ctx context.Context, arg UpdateContactBookT
 		err = q.UpdateContactBookAdditionalInfo(ctx, db.UpdateContactBookAdditionalInfoParams{
 			ContactBookID: arg.Id,
 			Nickname:      arg.AdditionalInfo.Nickname,
-			Tag:           arg.AdditionalInfo.Tag,
+			Tag:           util.ArrayToString(arg.AdditionalInfo.Tag),
 			Note:          arg.AdditionalInfo.Note,
 		})
 		if err != nil {
