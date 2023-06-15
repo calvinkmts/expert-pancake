@@ -6,13 +6,14 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	"github.com/expert-pancake/service/accounting/model"
+	"github.com/expert-pancake/service/accounting/config"
 	"github.com/gorilla/schema"
 )
 
 var defaultIndonesiaBanks = []model.Bank{
-	{BankName: "BCA", BankCode: "64"},
-	{BankName: "BNI", BankCode: "65"},
-	{BankName: "BRI", BankCode: "66"},
+	{BankName: "BCA", BankCode: "64", ImageUrl: config.BASE_URL + "assets/banks/image.png"},
+	{BankName: "BNI", BankCode: "65", ImageUrl: config.BASE_URL + "assets/banks/image.png"},
+	{BankName: "BRI", BankCode: "66", ImageUrl: config.BASE_URL + "assets/banks/image.png"},
 }
 
 var defaultWorldWideBanks = []model.Bank{

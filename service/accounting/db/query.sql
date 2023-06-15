@@ -227,3 +227,6 @@ FROM accounting.transactions_journal
 WHERE company_id = $1
 AND transaction_date BETWEEN @start_period AND @end_period
 GROUP BY chart_of_account_id;
+
+-- name: GetBanks :many
+SELECT * FROM accounting.banks;

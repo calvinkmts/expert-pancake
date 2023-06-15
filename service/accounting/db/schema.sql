@@ -94,3 +94,10 @@ CREATE TABLE accounting.transactions_journal (
   "description" text NOT NULL,
   "created_at" timestamptz DEFAULT (now())
 );
+
+CREATE TABLE accounting.banks (
+  "name" text NOT NULL,
+  "code" text NOT NULL,
+  "type" text NOT NULL,
+  "icon_url" text NOT NULL
+);

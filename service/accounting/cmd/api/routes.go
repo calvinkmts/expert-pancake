@@ -35,6 +35,7 @@ const (
 
 func (c *component) Routes(accountingService model.AccountingService) http.Handler {
 	mux := chi.NewRouter()
+	// mux.PathPrefix("/").Handler(http.FileServer(http.Dir("../../assets/")))
 
 	mux.Use(middleware.Logger)
 

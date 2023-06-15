@@ -41,6 +41,8 @@ func (c *component) New() error {
 		Handler: c.Routes(accountingService),
 	}
 
+	fs := http.FileServer(http.Dir("./assets/"))
+	http.Handle("/assets/*", fs)
 	err = server.ListenAndServe()
 	if err != nil {
 		log.Panic(err)

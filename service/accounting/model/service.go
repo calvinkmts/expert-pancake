@@ -30,6 +30,7 @@ type AccountingService interface {
 type Bank struct {
 	BankName string `json:"bank_name" validate:"required"`
 	BankCode string `json:"bank_code" validate:"required"`
+	ImageUrl string `json:"image_url" validate:"required"`
 }
 
 type ChartOfAccountType struct {
