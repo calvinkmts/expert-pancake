@@ -51,6 +51,8 @@ const (
 	GetSalesSummaryReportPath = "/sales/summary-report"
 	GetMostSoldItemsPath      = "/sales/most-sold-items"
 	GetMonthlyGrossSalesPath  = "/sales/monthly-gross-sales"
+
+	GetTopCustomers = "/sales/top-customers"
 )
 
 func (c *component) Routes(salesService model.SalesService) http.Handler {
@@ -108,6 +110,8 @@ func (c *component) Routes(salesService model.SalesService) http.Handler {
 	mux.Method("POST", GetSalesSummaryReportPath, httpHandler.New(salesService.GetSalesSummaryReport))
 	mux.Method("POST", GetMostSoldItemsPath, httpHandler.New(salesService.GetMostSoldItems))
 	mux.Method("POST", GetMonthlyGrossSalesPath, httpHandler.New(salesService.GetMonthlyGrossSales))
+
+	mux.Method("POST", GetTopCustomers, httpHandler.New(salesService.GetTopCustomers))
 
 	return mux
 }

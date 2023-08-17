@@ -45,6 +45,8 @@ type SalesService interface {
 	GetSalesSummaryReport(w http.ResponseWriter, r *http.Request) error
 	GetMostSoldItems(w http.ResponseWriter, r *http.Request) error
 	GetMonthlyGrossSales(w http.ResponseWriter, r *http.Request) error
+
+	GetTopCustomers(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -631,4 +633,26 @@ type GetMonthlyGrossSalesRequest struct {
 
 type GetMonthlyGrossSalesResponse struct {
 	MonthlyGrossSales []MonthlyGrossSale `json:"monthly_gross_sales" validate:"required"`
+}
+
+type GetTopCustomersRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id"`
+	StartDate string `json:"start_date" validate:"required"`
+	EndDate   string `json:"end_date" validate:"required"`
+}
+
+type TopCustomer struct {
+	ContactBookId   string `json:"contact_book_id" validate:"required"`
+	CustomerName    string `json:"customer_name" validate:"required"`
+	KonekinId       string `json:"konekin_id" validate:"required"`
+	Amount          string `json:"amount" validate:"required"`
+	ItemId          string `json:"item_id" validate:"required"`
+	ItemCode        string `json:"item_code" validate:"required"`
+	ItemName        string `json:"item_name" validate:"required"`
+	ItemVariantName string `json:"item_variant_name" validate:"required"`
+}
+
+type GetTopCustomersResponse struct {
+	TopCustomers []TopCustomer `json:"top_customers" validate:"required"`
 }
