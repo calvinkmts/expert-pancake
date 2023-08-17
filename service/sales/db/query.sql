@@ -498,3 +498,19 @@ AND transaction_date BETWEEN @start_date::date AND @end_date::date
 ) all_sales
 GROUP BY all_sales.month_number, all_sales.year_number
 ORDER BY all_sales.month_number, all_sales.year_number;
+
+-- name: GetTopCustomers :many
+SELECT 
+    a.contact_book_id,
+	a.konekin_id,
+	b.primary_item_variant_id,
+    SUM(b.amount) AS amount
+FROM sales.sales_invoices a
+JOIN sales.sales_invoice_items b ON a.id = b.sales_invoice_id
+WHERE a.company_id = $1
+    AND a.branch_id = $2
+    AND a.transaction_date BETWEEN @start_date::date AND @end_date::date 
+    AND a.is_deleted = FALSE
+GROUP BY b.primary_item_variant_id, a.contact_book_id, a.konekin_id;
+
+

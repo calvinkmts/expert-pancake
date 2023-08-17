@@ -41,4 +41,6 @@ const (
 	GetSalesSummaryReportError = 801001
 	GetMostSoldItemsError      = 801002
 	GetMonthlyGrossSalesError  = 801003
+
+	GetTopCustomersError = 801101
 )
