@@ -126,7 +126,7 @@ type ContactBook struct {
 
 type ContactBookAdditionaInfo struct {
 	Nickname string `json:"nickname"`
-	Tag      string `json:"tag"`
+	Tag      []string `json:"tag"`
 	Note     string `json:"note"`
 }
 
